@@ -11,4 +11,4 @@ Please edit `./src/firebase.js`.
 
 ## 2. `yarn start`
 
-Tha's it!
+That's it!
