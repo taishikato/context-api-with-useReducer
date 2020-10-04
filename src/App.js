@@ -1,25 +1,47 @@
 import React from 'react';
-import logo from './logo.svg';
+
+import Auth from './Auth';
+import { auth, provider } from './firebase';
+import { useStateValue } from './context/StateProvider';
+import { actionTypes } from './context/reducer';
 import './App.css';
 
 function App() {
+  const [state, dispatch] = useStateValue();
+
+  const handleLogin = async () => {
+    try {
+      const result = await auth.signInWithPopup(provider);
+      dispatch({
+        type: actionTypes.SET_USER,
+        user: result.user,
+      });
+    } catch (err) {
+      alert(err.message);
+    }
+  };
+
+  const handleLogout = async () => {
+    await auth.signOut();
+    dispatch({
+      type: actionTypes.SET_USER,
+      user: null,
+    });
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Auth>
+      <div className="App">
+        <header className="App-header">
+          <div>{state.user?.displayName}</div>
+          {state.user ? (
+            <button onClick={handleLogout}>Logout</button>
+          ) : (
+            <button onClick={handleLogin}>Login</button>
+          )}
+        </header>
+      </div>
+    </Auth>
   );
 }
 
